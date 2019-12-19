@@ -20,7 +20,7 @@ export default class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <h3>React Assignment No</h3>
+        <h3>React training :: Component</h3>
         <hr />
         <div>
           <input
