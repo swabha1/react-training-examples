@@ -1,77 +1,111 @@
-import React from "react";
+import React, { Component } from "react";
 import "./App.css";
+import Radium, { StyleRoot } from "radium";
+import Person from "./components/Person/Person";
 
-import Tile from "./components/Tile/Tile";
-import { Message } from "./components/Message/Message";
+class App extends Component {
+  state = {
+    persons: [
+      { id: "1", name: "Anil", age: 28 },
+      { id: "2", name: "Vijay", age: 29 },
+      { id: "3", name: "Neha", age: 26 }
+    ],
+    otherState: "some other value",
+    showPersons: false
+  };
 
-export default class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      text: "Sample text"
+  nameChangedHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
+
+    const person = {
+      ...this.state.persons[personIndex]
     };
-  }
 
-  onNameChanged(e) {
-    this.setState({
-      text: e.target.value
-    });
-  }
+    // const person = Object.assign({}, this.state.persons[personIndex]);
 
-  removeChar(index) {
-    let oldString = this.state.text;
-    let newString =
-      oldString.substring(0, index) +
-      oldString.substring(index + 1, oldString.length);
-    this.setState({
-      text: newString
-    });
-  }
+    person.name = event.target.value;
 
-  getTile(text) {
-    let tileArr = [];
-    for (let i = 0; i < text.length; i++) {
-      tileArr.push(
-        <Tile
-          char={text[i]}
-          index={i}
-          key={i}
-          onCharRemove={this.removeChar.bind(this)}
-        />
-      );
-    }
-    return tileArr;
-  }
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+    this.setState({ persons: persons });
+  };
+
+  deletePersonHandler = personIndex => {
+    // const persons = this.state.persons.slice();
+    const persons = [...this.state.persons];
+    persons.splice(personIndex, 1);
+    this.setState({ persons: persons });
+  };
+
+  togglePersonsHandler = () => {
+    const doesShow = this.state.showPersons;
+    this.setState({ showPersons: !doesShow });
+  };
 
   render() {
-    let tileJsx = this.getTile(this.state.text);
-    return (
-      <div className="container">
-        <h3>React training :: Component</h3>
-        <hr />
-        <div className="row">
-          <div className="col-md-6">
-            <div className="input-group mb-2">
-              <input
-                type="text"
-                value={this.state.text}
-                className="form-control"
-                onChange={this.onNameChanged.bind(this)}
+    const style = {
+      backgroundColor: "green",
+      color: "white",
+      font: "inherit",
+      border: "1px solid blue",
+      padding: "8px",
+      cursor: "pointer",
+      ":hover": {
+        backgroundColor: "lightgreen",
+        color: "black"
+      }
+    };
+
+    let persons = null;
+
+    if (this.state.showPersons) {
+      persons = (
+        <div>
+          {this.state.persons.map((person, index) => {
+            return (
+              <Person
+                click={() => this.deletePersonHandler(index)}
+                name={person.name}
+                age={person.age}
+                key={person.id}
+                changed={event => this.nameChangedHandler(event, person.id)}
               />
-              <div className="input-group-append">
-                <div className="input-group-text">
-                  Count: {this.state.text.length}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6">
-            <Message count={this.state.text.length} />
-          </div>
+            );
+          })}
         </div>
-        <hr />
-        {tileJsx}
-      </div>
+      );
+
+      style.backgroundColor = "red";
+      style[":hover"] = {
+        backgroundColor: "salmon",
+        color: "black"
+      };
+    }
+
+    const classes = [];
+    if (this.state.persons.length <= 2) {
+      classes.push("red");
+    }
+    if (this.state.persons.length <= 1) {
+      classes.push("bold");
+    }
+
+    return (
+      <StyleRoot>
+        <div className="App">
+          <h1>React styling demo</h1>
+          <p className={classes.join(" ")}>This is really working!</p>
+          <button style={style} onClick={this.togglePersonsHandler}>
+            Toggle Persons
+          </button>
+          {persons}
+        </div>
+      </StyleRoot>
     );
   }
 }
+
+export default Radium(App);
