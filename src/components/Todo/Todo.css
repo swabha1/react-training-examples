@@ -1,0 +1,31 @@
+.todo {
+  width: 60%;
+  margin: 16px auto;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 3px #ccc;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.todo .todo-done {
+  width: 10%;
+}
+
+.todo .todo-item {
+  width: 80%;
+}
+
+.todo .todo-item.done {
+  text-decoration: line-through;
+}
+
+.todo .todo-delete {
+  width: 10%;
+}
+/* @media (min-width: 500px) {
+    .Person {
+        width: 450px;
+    }
+} */

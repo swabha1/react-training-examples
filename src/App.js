@@ -1,52 +1,72 @@
 import React, { Component } from "react";
 import "./App.css";
 import Radium, { StyleRoot } from "radium";
-import Person from "./components/Person/Person";
+import Todo from "./components/Todo/Todo";
 
 class App extends Component {
   state = {
-    persons: [
-      { id: "1", name: "Anil", age: 28 },
-      { id: "2", name: "Vijay", age: 29 },
-      { id: "3", name: "Neha", age: 26 }
+    todoList: [
+      { id: "1", todo: "Todo 1", done: false },
+      { id: "2", todo: "Todo 2", done: false },
+      { id: "3", todo: "Todo 3", done: false }
     ],
-    otherState: "some other value",
-    showPersons: false
+    showTodo: false,
+    newTodo: ""
   };
 
-  nameChangedHandler = (event, id) => {
-    const personIndex = this.state.persons.findIndex(p => {
-      return p.id === id;
+  deleteTodoHandler = todoIndex => {
+    const todoList = [...this.state.todoList];
+    todoList.splice(todoIndex, 1);
+    this.setState({ todoList: todoList });
+  };
+
+  completeTodoHandler = todoIndex => {
+    const todoList = [...this.state.todoList];
+    todoList[todoIndex].done = !todoList[todoIndex].done;
+    this.setState({ todoList: todoList });
+  };
+
+  addTodoHandler = () => {
+    let state = { ...this.state };
+    state.todoList.push({
+      id: state.todoList.length + 1,
+      todo: this.state.newTodo,
+      done: false
     });
-
-    const person = {
-      ...this.state.persons[personIndex]
-    };
-
-    // const person = Object.assign({}, this.state.persons[personIndex]);
-
-    person.name = event.target.value;
-
-    const persons = [...this.state.persons];
-    persons[personIndex] = person;
-
-    this.setState({ persons: persons });
+    //state.newTodo = "";
+    this.setState(state);
   };
 
-  deletePersonHandler = personIndex => {
-    // const persons = this.state.persons.slice();
-    const persons = [...this.state.persons];
-    persons.splice(personIndex, 1);
-    this.setState({ persons: persons });
+  toggleTodoHandler = () => {
+    let state = { ...this.state };
+    state.showTodo = !state.showTodo;
+    this.setState(state);
   };
 
-  togglePersonsHandler = () => {
-    const doesShow = this.state.showPersons;
-    this.setState({ showPersons: !doesShow });
+  setNewTodoString = e => {
+    this.setState({ newTodo: e.currentTarget.value });
   };
 
-  render() {
-    const style = {
+  getTodoList = () => {
+    return (
+      <div>
+        {this.state.todoList.map((todoItem, index) => {
+          return (
+            <Todo
+              click={() => this.deleteTodoHandler(index)}
+              doneClick={() => this.completeTodoHandler(index)}
+              todo={todoItem.todo}
+              done={todoItem.done}
+              key={todoItem.id}
+            />
+          );
+        })}
+      </div>
+    );
+  };
+
+  getCustomStyle = () => {
+    return {
       backgroundColor: "green",
       color: "white",
       font: "inherit",
@@ -58,26 +78,25 @@ class App extends Component {
         color: "black"
       }
     };
+  };
 
-    let persons = null;
+  getClassString = () => {
+    const classes = [];
+    if (this.state.todoList.length <= 2) {
+      classes.push("red");
+    }
+    if (this.state.todoList.length <= 1) {
+      classes.push("bold");
+    }
+    return classes.join(" ");
+  };
 
-    if (this.state.showPersons) {
-      persons = (
-        <div>
-          {this.state.persons.map((person, index) => {
-            return (
-              <Person
-                click={() => this.deletePersonHandler(index)}
-                name={person.name}
-                age={person.age}
-                key={person.id}
-                changed={event => this.nameChangedHandler(event, person.id)}
-              />
-            );
-          })}
-        </div>
-      );
+  render() {
+    const style = this.getCustomStyle();
 
+    let todoList = null;
+    if (this.state.showTodo) {
+      todoList = this.getTodoList();
       style.backgroundColor = "red";
       style[":hover"] = {
         backgroundColor: "salmon",
@@ -85,23 +104,20 @@ class App extends Component {
       };
     }
 
-    const classes = [];
-    if (this.state.persons.length <= 2) {
-      classes.push("red");
-    }
-    if (this.state.persons.length <= 1) {
-      classes.push("bold");
-    }
+    const classes = this.getClassString();
 
     return (
       <StyleRoot>
         <div className="App">
-          <h1>React styling demo</h1>
-          <p className={classes.join(" ")}>This is really working!</p>
-          <button style={style} onClick={this.togglePersonsHandler}>
-            Toggle Persons
+          <h1>TODO Component</h1>
+          <p className={classes}>This is really working!</p>
+
+          <button style={style} onClick={this.toggleTodoHandler}>
+            Toggle Todo
           </button>
-          {persons}
+          <input type="text" onKeyUp={this.setNewTodoString} />
+          <button onClick={this.addTodoHandler}>Add Todo</button>
+          {todoList}
         </div>
       </StyleRoot>
     );
