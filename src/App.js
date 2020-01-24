@@ -1,16 +1,15 @@
 import React, { Component } from "react";
-import "./App.css";
 import Radium, { StyleRoot } from "radium";
+import "./App.css";
+
 import Todo from "./components/Todo/Todo";
+import AddTodo from "./components/AddTodo/AddTodo";
+import Notification from "./components/Notification/Notification";
 
 class App extends Component {
   state = {
-    todoList: [
-      { id: "1", todo: "Todo 1", done: false },
-      { id: "2", todo: "Todo 2", done: false },
-      { id: "3", todo: "Todo 3", done: false }
-    ],
-    showTodo: false,
+    todoList: [],
+    showTodo: true,
     newTodo: ""
   };
 
@@ -27,14 +26,17 @@ class App extends Component {
   };
 
   addTodoHandler = () => {
-    let state = { ...this.state };
-    state.todoList.push({
-      id: state.todoList.length + 1,
-      todo: this.state.newTodo,
-      done: false
-    });
-    //state.newTodo = "";
-    this.setState(state);
+    let todo = this.state.newTodo;
+    if (todo !== "") {
+      let newState = { ...this.state };
+      newState.todoList.push({
+        id: newState.todoList.length + 1,
+        todo: todo,
+        done: false
+      });
+      newState.newTodo = "";
+      this.setState(newState);
+    }
   };
 
   toggleTodoHandler = () => {
@@ -44,7 +46,7 @@ class App extends Component {
   };
 
   setNewTodoString = e => {
-    this.setState({ newTodo: e.currentTarget.value });
+    this.setState({ newTodo: e.target.value });
   };
 
   getTodoList = () => {
@@ -57,6 +59,7 @@ class App extends Component {
               doneClick={() => this.completeTodoHandler(index)}
               todo={todoItem.todo}
               done={todoItem.done}
+              id={todoItem.id}
               key={todoItem.id}
             />
           );
@@ -80,17 +83,6 @@ class App extends Component {
     };
   };
 
-  getClassString = () => {
-    const classes = [];
-    if (this.state.todoList.length <= 2) {
-      classes.push("red");
-    }
-    if (this.state.todoList.length <= 1) {
-      classes.push("bold");
-    }
-    return classes.join(" ");
-  };
-
   render() {
     const style = this.getCustomStyle();
 
@@ -104,20 +96,37 @@ class App extends Component {
       };
     }
 
-    const classes = this.getClassString();
-
     return (
       <StyleRoot>
-        <div className="App">
-          <h1>TODO Component</h1>
-          <p className={classes}>This is really working!</p>
-
-          <button style={style} onClick={this.toggleTodoHandler}>
-            Toggle Todo
-          </button>
-          <input type="text" onKeyUp={this.setNewTodoString} />
-          <button onClick={this.addTodoHandler}>Add Todo</button>
-          {todoList}
+        <div className="container p-2">
+          <div className="row p-2">
+            <div className="col-md-12">
+              <Notification todoList={this.state.todoList} />
+            </div>
+          </div>
+          <div className="row p-2">
+            <div className="col-md-12">
+              <AddTodo
+                setNewTodoString={this.setNewTodoString}
+                newTodo={this.state.newTodo}
+                addTodoHandler={this.addTodoHandler}
+              />
+            </div>
+          </div>
+          {/* <div className="row p-2">
+            <div className="col-md-12 text-center">
+              <button
+                className="btn btn-primary"
+                style={style}
+                onClick={this.toggleTodoHandler}
+              >
+                Toggle Todo
+              </button>
+            </div>
+          </div> */}
+          <div className="row p-2">
+            <div className="col-md-12 card-columns">{todoList}</div>
+          </div>
         </div>
       </StyleRoot>
     );
