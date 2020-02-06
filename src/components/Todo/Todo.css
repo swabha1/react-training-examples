@@ -1,6 +1,9 @@
 .bg-success {
   color: white;
 }
+.card.bg-success .custom-control-label {
+  text-decoration: line-through;
+}
 /* @media (min-width: 500px) {
     .Person {
         width: 450px;

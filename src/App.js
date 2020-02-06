@@ -49,6 +49,12 @@ class App extends Component {
     this.setState({ newTodo: e.target.value });
   };
 
+  addItemOnEnter = e => {
+    if (e.key === "Enter") {
+      this.addTodoHandler();
+    }
+  };
+
   getTodoList = () => {
     return (
       <div>
@@ -110,6 +116,7 @@ class App extends Component {
                 setNewTodoString={this.setNewTodoString}
                 newTodo={this.state.newTodo}
                 addTodoHandler={this.addTodoHandler}
+                keyHandler={this.addItemOnEnter}
               />
             </div>
           </div>

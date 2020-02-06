@@ -8,17 +8,10 @@ const addTodo = props => {
         type="text"
         className="form-control"
         onChange={props.setNewTodoString}
+        placeholder="You todo goes here.. ( Press 'Enter' to add in list )"
+        onKeyDown={props.keyHandler}
         value={props.newTodo}
       />
-      <div className="input-group-append">
-        <button
-          className="btn btn-primary"
-          onClick={props.addTodoHandler}
-          type="button"
-        >
-          Add Todo
-        </button>
-      </div>
     </div>
   );
 };
